@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>It's a dice</title>
+    <meta name="description" content="For use when you don't have a dice, but do have a device (and an internet connection and at least 1 finger)">
+
+    <link rel="canonical" href="https://dice.willshawmedia.com/">
+    <style>
+      #face {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        color: #EEE;
+        background: #333;
+        font-family: sans-serif;
+        justify-content: center;
+        align-content: center;
+        cursor: pointer;
+     }
+
+     h1 {
+       text-align: center;  
+     }
+
+     #result {
+      text-align: center;
+      font-size: 5em;   
+     }
+    </style>
+  </head>
+  <body>
+    <div id="face">
+      <h1>
+      It's a Dice! Tap to roll...
+      </h1>
+      <div id="result">
+      </div>
+    </div>
+  </body>
+  <script>
+    let num = 0;
+    let result = document.getElementById('result');
+    let face = document.getElementById('face');
+
+    let roll = function roll() {
+      result.innerHTML = Math.floor(Math.random() * 6) + 1;
+    }
+    face.addEventListener('click', roll );
+
+    roll();
+  </script>
+</html>
