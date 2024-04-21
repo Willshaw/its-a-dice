@@ -61,9 +61,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full max-w-screen-xl m-auto">
+  <div class="w-full p-2 max-w-screen-xl m-auto">
     <h1>Dice Dice Dice!</h1>
-    <div class="controls flex">
+    <div class="controls md:flex">
       <div class="control">
         <h3>How many dice?</h3>
         <input placeholder="6" type="number" v-model="num_rolls" />
@@ -72,19 +72,17 @@ onMounted(() => {
         <h3>How many sides?</h3>
         <input placeholder="6" type="number" v-model="num_sides" />
       </div>
-      <div class="control align-baseline flex-col content-end">
+      <div class="control align-baseline content-end grow">
         <button @click="castRolls()">Roll</button>
-      </div>
-      <div class="control align-baseline flex-col  ml-auto content-end">
-        <button class="bg-red-600 text-black" @click="clearHistory">Clear History</button>
+        <button class="bg-red-600 text-black float-right" @click="clearHistory">Clear History</button>
       </div>
     </div>
     <h2 class="my-4">History</h2>
     <div class="history">
       <div class="roll flex my-4" v-for="(rolls, i) in history" :key="rolls">
-        <div class="faces grow flex">
+        <div class="faces grow flex flex-wrap">
           <div class="face" :class="{ critical: roll === 6, miss: roll === 1 }" v-for="roll in rolls" :key="roll">{{ roll }}</div>
-          <button class="ml-auto" @click="castRolls(rolls.length)">Roll Again</button>
+          <button class="w-full mt-2 md:w-auto md:ml-auto" @click="castRolls(rolls.length)">Roll Again</button>
         </div>
         <div class="controls p-4">
           <button class="delete bg-red-600 text-black" v-if="roll_to_delete !== i" @click="roll_to_delete = i">Delete</button>
@@ -118,7 +116,7 @@ onMounted(() => {
   }
 
   .control {
-    @apply mr-4;
+    @apply mr-4 mt-2;
   }
 
   .faces {
@@ -126,7 +124,7 @@ onMounted(() => {
   }
 
   .face {
-    @apply bg-gray-700 text-white font-bold mr-2 p-2 rounded w-12 h-12 flex items-center justify-center;
+    @apply bg-gray-700 text-white font-bold mr-2 mt-2 p-2 rounded w-12 h-12 flex items-center justify-center;
 
     &.critical {
       @apply bg-red-600;
