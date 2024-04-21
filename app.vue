@@ -17,15 +17,26 @@ const history = ref([]);
 const single_roll = ((limit = 6) => { return Math.floor(Math.random() * limit) + 1; });
 
 // make a certain number of rolls (each one to the limit), returning an array of the results
-const make_rolls = () => {
+const make_rolls = (rolls_to_make: number) => {
   const rolls: number[] = [];
-  for (let i = 0; i < num_rolls.value; i++) {
+  for (let i = 0; i < (rolls_to_make ?? num_rolls.value); i++) {
     rolls.push(single_roll(num_sides.value));
   }
   // push the rolls into start of the history
   history.value.unshift(rolls.sort());
-  console.log(rolls);
+  // save to local storage
+  localStorage.setItem('history', JSON.stringify(history.value));
 };
+
+// get the history from local storage
+onMounted(() => {
+  if (localStorage.getItem('history')) {
+  const loaded_history = localStorage.getItem('history');
+  if(loaded_history && loaded_history.length) {
+    history.value = JSON.parse(loaded_history);
+  }
+}
+});
 </script>
 
 <template>
@@ -41,13 +52,14 @@ const make_rolls = () => {
         <input placeholder="6" type="number" v-model="num_sides" />
       </div>
       <div class="control align-baseline flex-col content-end">
-        <button @click="make_rolls">Roll</button>
+        <button @click="make_rolls()">Roll</button>
       </div>
     </div>
     <h2 class="my-4">History</h2>
     <div class="history">
       <div class="roll flex" v-for="rolls in history" :key="rolls">
         <div class="face" :class="{ critical: roll === 6, miss: roll === 1 }" v-for="roll in rolls" :key="roll">{{ roll }}</div>
+        <button class="ml-auto" @click="make_rolls(rolls.length)">Roll Again</button>
       </div>
     </div>
   </div>
