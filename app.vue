@@ -10,22 +10,37 @@ useSeoMeta({
 const num_rolls = defineModel('num_rolls', { type: Number, default: 1 });
 const num_sides = defineModel('num_sides', { type: Number, default: 6 });
 
+// index of roll to delete
+const roll_to_delete = ref(-1);
+
 // history of rolls, which could have been more than 1 die
 const history = ref([]);
 
 // function to return a random number between 1 and the limit, defaulting to 6
-const single_roll = ((limit = 6) => { return Math.floor(Math.random() * limit) + 1; });
+const castRoll = ((limit = 6) => { return Math.floor(Math.random() * limit) + 1; });
 
 // make a certain number of rolls (each one to the limit), returning an array of the results
-const make_rolls = (rolls_to_make: number) => {
+const castRolls = (rolls_to_make: number) => {
   const rolls: number[] = [];
   for (let i = 0; i < (rolls_to_make ?? num_rolls.value); i++) {
-    rolls.push(single_roll(num_sides.value));
+    rolls.push(castRoll(num_sides.value));
   }
   // push the rolls into start of the history
   history.value.unshift(rolls.sort());
   // save to local storage
+  saveHistory();
+};
+
+// save the history to local storage
+const saveHistory = () => {
   localStorage.setItem('history', JSON.stringify(history.value));
+};
+
+// remove a roll from the history
+const deleteRoll = (index: number) => {
+  history.value.splice(index, 1);
+  saveHistory();
+  roll_to_delete.value = -1;
 };
 
 // get the history from local storage
@@ -52,14 +67,23 @@ onMounted(() => {
         <input placeholder="6" type="number" v-model="num_sides" />
       </div>
       <div class="control align-baseline flex-col content-end">
-        <button @click="make_rolls()">Roll</button>
+        <button @click="castRolls()">Roll</button>
       </div>
     </div>
     <h2 class="my-4">History</h2>
     <div class="history">
-      <div class="roll flex" v-for="rolls in history" :key="rolls">
-        <div class="face" :class="{ critical: roll === 6, miss: roll === 1 }" v-for="roll in rolls" :key="roll">{{ roll }}</div>
-        <button class="ml-auto" @click="make_rolls(rolls.length)">Roll Again</button>
+      <div class="roll flex my-4" v-for="(rolls, i) in history" :key="rolls">
+        <div class="faces grow flex">
+          <div class="face" :class="{ critical: roll === 6, miss: roll === 1 }" v-for="roll in rolls" :key="roll">{{ roll }}</div>
+          <button class="ml-auto" @click="castRolls(rolls.length)">Roll Again</button>
+        </div>
+        <div class="controls p-4">
+          <button class="delete bg-red-600 text-black" v-if="roll_to_delete !== i" @click="roll_to_delete = i">Delete</button>
+          <template v-if="roll_to_delete === i">
+            <button class="cancel ml-2 bg-yellow-500 text-black" v-if="roll_to_delete === i" @click="roll_to_delete = -1">Cancel</button>
+            <button class="confirm ml-2 bg-red-600 text-black" v-if="roll_to_delete === i" @click="deleteRoll(i)">Confirm</button>
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -88,8 +112,8 @@ onMounted(() => {
     @apply mr-4;
   }
 
-  .roll {
-    @apply bg-gray-100 my-2 p-4;
+  .faces {
+    @apply bg-gray-100 p-4;
   }
 
   .face {
