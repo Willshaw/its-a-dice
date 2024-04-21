@@ -36,6 +36,12 @@ const saveHistory = () => {
   localStorage.setItem('history', JSON.stringify(history.value));
 };
 
+// clear the history
+const clearHistory = () => {
+  history.value = [];
+  saveHistory();
+};
+
 // remove a roll from the history
 const deleteRoll = (index: number) => {
   history.value.splice(index, 1);
@@ -68,6 +74,9 @@ onMounted(() => {
       </div>
       <div class="control align-baseline flex-col content-end">
         <button @click="castRolls()">Roll</button>
+      </div>
+      <div class="control align-baseline flex-col  ml-auto content-end">
+        <button class="bg-red-600 text-black" @click="clearHistory">Clear History</button>
       </div>
     </div>
     <h2 class="my-4">History</h2>
