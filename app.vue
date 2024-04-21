@@ -83,6 +83,9 @@ onMounted(() => {
         <div class="faces grow flex flex-wrap">
           <div class="face" :class="{ critical: roll === 6, miss: roll === 1 }" v-for="roll in rolls" :key="roll">{{ roll }}</div>
           <button class="w-full mt-2 md:w-auto md:ml-auto" @click="castRolls(rolls.length)">Roll Again</button>
+          <div class="info w-full text-gray-400 text-sm mt-4">
+            dice: {{ rolls.length }}, total: {{ rolls.reduce((a, b) => a + b, 0) }}
+          </div>
         </div>
         <div class="controls p-4">
           <button class="delete bg-red-600 text-black" v-if="roll_to_delete !== i" @click="roll_to_delete = i">Delete</button>
